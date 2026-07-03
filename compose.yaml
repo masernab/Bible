@@ -1,0 +1,19 @@
+services:
+  pgsql:
+    image: pgvector/pgvector:pg17
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_DB: bible
+      POSTGRES_USER: bible
+      POSTGRES_PASSWORD: secret
+    volumes:
+      - pgsql-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD', 'pg_isready', '-U', 'bible', '-d', 'bible']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  pgsql-data:
