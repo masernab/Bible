@@ -19,4 +19,21 @@ return [
         'dimensions' => (int) env('BIBLE_EMBEDDING_DIMENSIONS', 768),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Vector search tuning
+    |--------------------------------------------------------------------------
+    |
+    | The HNSW index is approximate: `hnsw.ef_search` controls how many
+    | candidates it inspects per query. The pgvector default (40) gives poor
+    | recall on this dataset and misses the true closest verses, so we raise
+    | it. It should comfortably exceed the search limit; 100 keeps queries at
+    | a few milliseconds while returning the exact nearest neighbours.
+    |
+    */
+
+    'search' => [
+        'ef_search' => (int) env('BIBLE_HNSW_EF_SEARCH', 100),
+    ],
+
 ];
