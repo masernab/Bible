@@ -24,7 +24,7 @@ class ImportBible extends Command
         }
 
         $order = $this->canonicalOrder($path);
-        $files = glob($path.'/*.json');
+        $files = glob($path.'/*.json') ?: [];
 
         foreach ($files as $file) {
             $name = pathinfo($file, PATHINFO_FILENAME);
@@ -33,7 +33,15 @@ class ImportBible extends Command
                 continue; // not a book
             }
 
-            $data = json_decode(file_get_contents($file), true);
+            $contents = file_get_contents($file);
+
+            if ($contents === false) {
+                $this->error("Could not read file: {$file}");
+
+                continue;
+            }
+
+            $data = json_decode($contents, true);
 
             $position = $order[$data['book']]['position'] ?? 99;
 
@@ -88,7 +96,13 @@ class ImportBible extends Command
             return [];
         }
 
-        $books = json_decode(file_get_contents($file), true);
+        $contents = file_get_contents($file);
+
+        if ($contents === false) {
+            return [];
+        }
+
+        $books = json_decode($contents, true);
         $order = [];
 
         // Books.json is a plain list of book names in canonical order.
