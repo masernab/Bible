@@ -1,0 +1,13 @@
+{
+   "book": "Génesis",
+   "chapters": [
+      {
+         "chapter": 1,
+         "verses": [
+            { "verse": 1, "text": "En el principio creó Dios los cielos y la tierra." },
+            { "verse": 2, "text": "Y la tierra estaba desordenada y vacía, y las tinieblas estaban sobre la haz del abismo." },
+            { "verse": 3, "text": "Y dijo Dios: Sea la luz; y fue la luz." }
+         ]
+      }
+   ]
+}

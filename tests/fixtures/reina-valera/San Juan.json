@@ -1,0 +1,12 @@
+{
+   "book": "San Juan",
+   "chapters": [
+      {
+         "chapter": 1,
+         "verses": [
+            { "verse": 1, "text": "En el principio era el Verbo, y el Verbo era con Dios, y el Verbo era Dios." },
+            { "verse": 2, "text": "Este era en el principio con Dios." }
+         ]
+      }
+   ]
+}
