@@ -104,10 +104,17 @@ Route::get('/bible', BibleSearchController::class)->name('bible.search');
 So the frontend can call this route with types, generate the Wayfinder definitions:
 
 ```bash
-php artisan wayfinder:generate
+php artisan wayfinder:generate --with-form
 ```
 
 This creates functions importable from `@/actions` or `@/routes` that you'll use in guide 09.
+
+> ⚠️ **Use `--with-form`.** `wayfinder:generate` regenerates **all** your route files, not just the
+> new one. The Laravel starter kit's pages (login, register, profile…) call `SomeRoute.form()`, and
+> the Vite plugin is configured with `formVariants: true` (see `vite.config.ts`). If you run
+> `wayfinder:generate` **without** `--with-form`, it strips the `.form()` helpers and breaks
+> `npm run types:check` across those existing pages. Either pass `--with-form` here, or just let
+> `npm run dev` / `npm run build` regenerate them (the Vite plugin already uses the right options).
 
 Format the PHP:
 
@@ -127,11 +134,17 @@ php artisan tinker --execute '$r = app(App\Services\BibleSearch::class)->search(
 
 Coherent verses on the topic should show up, even if they don't contain those exact words.
 
+> The corpus is Spanish (Reina-Valera), so Spanish queries (`"amar al prójimo"`) work best.
+>
+> If the results look irrelevant even though embeddings exist, the culprit is almost always the HNSW
+> index's `hnsw.ef_search` still sitting at the pgvector default of 40 — see the warning in
+> [guide 07](07-embeddings-command.md#create-the-hnsw-index-after-loading-recommended). Raise it to 100.
+
 ## Checklist
 
 - [ ] `BibleSearch` returns results via `whereVectorSimilarTo`.
 - [ ] Invokable controller rendering `bible/search`.
 - [ ] `GET /bible` route named `bible.search`.
-- [ ] `wayfinder:generate` run.
+- [ ] `wayfinder:generate --with-form` run (and `npm run types:check` still passes).
 
 ➡️ Next: [09 · React page](09-react-page.md)

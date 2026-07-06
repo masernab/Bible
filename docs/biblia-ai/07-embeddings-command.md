@@ -113,14 +113,51 @@ You can stop it (Ctrl+C) and run it again; it resumes where it left off.
 
 ---
 
-## Optional: create the HNSW index after loading
+## Create the HNSW index after loading (recommended)
 
 If in guide 05 you left the column **without** an index, now is the time to create it (it speeds up
-search). Create a new migration and in `up()`:
+search from ~130 ms to a few ms on this dataset). Create a new migration and in `up()`:
 
 ```php
 DB::statement('CREATE INDEX verses_embedding_hnsw ON verses USING hnsw (embedding vector_cosine_ops)');
 ```
+
+> ⚠️ **The default `hnsw.ef_search` gives wrong results — read this.**
+>
+> HNSW is an **approximate** index. How many candidates it inspects per query is controlled by the
+> `hnsw.ef_search` GUC, whose pgvector default is **40**. On this dataset that default has poor
+> recall: it silently **skips the true closest verses** and returns worse matches, with no error.
+> For example, searching "amar al prójimo" returns genealogies instead of San Mateo 22:39.
+>
+> The fix is to raise `hnsw.ef_search` (100 is plenty here, and queries stay at a few ms). It should
+> comfortably exceed your search `limit`. The cleanest place is the **database level**, so every
+> connection inherits it and the search code needs no per-query tuning. Add it to the same migration:
+
+```php
+public function up(): void
+{
+    DB::statement('CREATE INDEX verses_embedding_hnsw ON verses USING hnsw (embedding vector_cosine_ops)');
+
+    // Raise ef_search from the pgvector default of 40 so recall is correct.
+    // (You can move the literal to config, e.g. config/bible.php, as a single
+    //  source of truth if you like.)
+    $database = DB::getDatabaseName();
+
+    DB::statement("ALTER DATABASE \"{$database}\" SET hnsw.ef_search = 100");
+}
+
+public function down(): void
+{
+    $database = DB::getDatabaseName();
+
+    DB::statement("ALTER DATABASE \"{$database}\" RESET hnsw.ef_search");
+    DB::statement('DROP INDEX IF EXISTS verses_embedding_hnsw');
+}
+```
+
+> `ALTER DATABASE ... SET` persists in Postgres and applies to **new** sessions (web, queue, tinker,
+> tests). To confirm it took: open a fresh `php artisan tinker` and run
+> `DB::selectOne("SELECT current_setting('hnsw.ef_search') AS v")->v;` — it should print `100`.
 
 ## How to verify
 
@@ -135,6 +172,6 @@ It should reach **0 pending** when done.
 - [ ] `bible:embed` command created and resumable.
 - [ ] `--limit=200` test stores 768-dim vectors.
 - [ ] Every verse has an embedding (0 pending).
-- [ ] (Optional) HNSW index created.
+- [ ] HNSW index created **and** `hnsw.ef_search` raised (default 40 → 100) so recall is correct.
 
 ➡️ Next: [08 · Search (backend)](08-search-backend.md)
