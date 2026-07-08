@@ -70,3 +70,5 @@ php artisan test --compact --filter=Bible
 - [ ] `--filter=Bible` tests green.
 
 🎉 Project complete! Head back to the [index](README.md) to review any stage.
+
+➡️ Optional next: [12 · Look up by reference](12-reference-lookup.md) — add a `/passage` page to read a verse by citation.

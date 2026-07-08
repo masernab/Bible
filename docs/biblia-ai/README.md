@@ -56,6 +56,7 @@ Reina-Valera JSON ──▶ `verses` table ──▶ embeddings (Ollama) ──�
 | 09 | [React page](09-react-page.md) | Search UI at `/bible` |
 | 10 | [Tests](10-tests.md) | Pest tests that keep everything working |
 | 11 | [Final verification](11-final-verification.md) | End-to-end test of the whole flow |
+| 12 | [Look up by reference](12-reference-lookup.md) *(bonus)* | A `/passage` page to read a verse by citation (`Josué 1:8`) |
 
 ---
 

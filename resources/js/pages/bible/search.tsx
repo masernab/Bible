@@ -1,10 +1,10 @@
-import { Form, Head } from '@inertiajs/react';
+import { Form, Head, Link } from '@inertiajs/react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
-import { search as bibleSearch } from '@/routes/bible';
+import { reference as bibleReference, search as bibleSearch } from '@/routes/bible';
 
 interface Result {
     id: number;
@@ -21,17 +21,23 @@ interface Props {
 export default function BibleSearch({ query, results }: Props) {
     return (
         <>
-            <Head title="Búsqueda semántica de la Biblia" />
+            <Head title="Semantic Bible search" />
 
             <div className="mx-auto max-w-2xl px-4 py-10">
                 <header className="mb-8">
                     <h1 className="text-2xl font-semibold tracking-tight">
-                        Búsqueda semántica de la Biblia
+                        Semantic Bible search
                     </h1>
                     <p className="mt-1 text-sm text-muted-foreground">
-                        Busca por significado, no por palabras exactas.
-                        Reina-Valera.
+                        Search by meaning, not exact words. The text is the
+                        Spanish Reina-Valera, so search in Spanish.
                     </p>
+                    <Link
+                        href={bibleReference.url()}
+                        className="mt-2 inline-block text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+                    >
+                        Know the citation? Look it up by reference →
+                    </Link>
                 </header>
 
                 <Form action={bibleSearch.url()} method="get" className="mb-8">
@@ -43,11 +49,11 @@ export default function BibleSearch({ query, results }: Props) {
                                     name="q"
                                     defaultValue={query}
                                     autoFocus
-                                    placeholder="p. ej. amar al prójimo"
+                                    placeholder="e.g. amar al prójimo"
                                     className="flex-1"
                                 />
                                 <Button type="submit" disabled={processing}>
-                                    {processing ? 'Buscando…' : 'Buscar'}
+                                    {processing ? 'Searching…' : 'Search'}
                                 </Button>
                             </div>
 
@@ -78,7 +84,7 @@ function Results({ query, results }: Props) {
     if (query !== '' && results.length === 0) {
         return (
             <p className="mt-8 text-sm text-muted-foreground">
-                No se encontraron versículos para «{query}».
+                No verses found for “{query}”.
             </p>
         );
     }
