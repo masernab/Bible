@@ -2,7 +2,10 @@ import { Form, Head, Link } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { reference as bibleReference, search as bibleSearch } from '@/routes/bible';
+import {
+    reference as bibleReference,
+    search as bibleSearch,
+} from '@/routes/bible';
 
 interface Verse {
     id: number;
@@ -31,9 +34,9 @@ export default function BibleReference({ query, label, error, verses }: Props) {
                         Look up by reference
                     </h1>
                     <p className="mt-1 text-sm text-muted-foreground">
-                        Type a citation like “Josué 1:8”, “Juan 3 16” or
-                        “Salmos 23” to read the passage. Book names are in
-                        Spanish (Reina-Valera).
+                        Type a citation like “Josué 1:8”, “Juan 3 16” or “Salmos
+                        23” to read the passage. Book names are in Spanish
+                        (Reina-Valera).
                     </p>
                     <Link
                         href={bibleSearch.url()}
@@ -43,7 +46,11 @@ export default function BibleReference({ query, label, error, verses }: Props) {
                     </Link>
                 </header>
 
-                <Form action={bibleReference.url()} method="get" className="mb-6">
+                <Form
+                    action={bibleReference.url()}
+                    method="get"
+                    className="mb-6"
+                >
                     {({ processing }) => (
                         <div className="flex gap-2">
                             <Input

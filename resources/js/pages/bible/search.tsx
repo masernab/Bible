@@ -4,7 +4,10 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
-import { reference as bibleReference, search as bibleSearch } from '@/routes/bible';
+import {
+    reference as bibleReference,
+    search as bibleSearch,
+} from '@/routes/bible';
 
 interface Result {
     id: number;
