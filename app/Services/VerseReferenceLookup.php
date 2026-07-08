@@ -12,7 +12,8 @@ class VerseReferenceLookup
     /**
      * Resolve a human-typed reference such as "josue 1 8" or "Josué 1:8" into verses.
      *
-     * When only a chapter is given ("juan 3") the whole chapter is returned.
+     * When only a chapter is given ("juan 3") the whole chapter is returned, and
+     * when only a book is given ("juan") the whole book is returned.
      *
      * @return array{
      *     book: Book|null,
@@ -41,14 +42,17 @@ class VerseReferenceLookup
             return $this->result(error: "We couldn't find the book \"{$bookName}\".");
         }
 
-        $label = $verse !== null
-            ? "{$book->name} {$chapter}:{$verse}"
-            : "{$book->name} {$chapter}";
+        $label = match (true) {
+            $verse !== null => "{$book->name} {$chapter}:{$verse}",
+            $chapter !== null => "{$book->name} {$chapter}",
+            default => $book->name,
+        };
 
         $verses = Verse::query()
             ->where('book_id', $book->id)
-            ->where('chapter', $chapter)
+            ->when($chapter !== null, fn ($query) => $query->where('chapter', $chapter))
             ->when($verse !== null, fn ($query) => $query->where('verse', $verse))
+            ->orderBy('chapter')
             ->orderBy('verse')
             ->get();
 
@@ -72,12 +76,13 @@ class VerseReferenceLookup
     }
 
     /**
-     * Split a reference into [book name, chapter, verse|null].
+     * Split a reference into [book name, chapter|null, verse|null].
      *
      * The book name may itself start with a number ("1 Corintios"), so the
-     * chapter and verse are matched from the end of the string.
+     * chapter and verse are matched from the end of the string. When no trailing
+     * chapter is present the whole reference is treated as a book name.
      *
-     * @return array{0: string, 1: int, 2: int|null}|null
+     * @return array{0: string, 1: int|null, 2: int|null}|null
      */
     private function parse(string $reference): ?array
     {
@@ -87,13 +92,13 @@ class VerseReferenceLookup
             return null;
         }
 
-        if (! preg_match('/^(.+?)\s+(\d+)(?:[:.\s]+(\d+))?$/u', $normalized, $matches)) {
-            return null;
+        if (preg_match('/^(.+?)\s+(\d+)(?:[:.\s]+(\d+))?$/u', $normalized, $matches)) {
+            $verse = isset($matches[3]) ? (int) $matches[3] : null;
+
+            return [$matches[1], (int) $matches[2], $verse];
         }
 
-        $verse = isset($matches[3]) && $matches[3] !== '' ? (int) $matches[3] : null;
-
-        return [$matches[1], (int) $matches[2], $verse];
+        return [$normalized, null, null];
     }
 
     /**

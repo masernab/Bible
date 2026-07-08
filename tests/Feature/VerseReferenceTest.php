@@ -56,6 +56,22 @@ it('returns the whole chapter when no verse is given', function () {
         );
 });
 
+it('returns the whole book when only a book name is given', function () {
+    $book = Book::factory()->create(['name' => 'Juan', 'slug' => 'juan']);
+    makeVerse($book, 1, 1);
+    makeVerse($book, 3, 16);
+    makeVerse($book, 3, 17);
+
+    $this->get('/passage?q=juan')
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->where('label', 'Juan')
+            ->where('error', null)
+            ->has('verses', 3)
+            ->where('verses.0.reference', 'Juan 1:1')
+        );
+});
+
 it('handles books whose name starts with a number', function () {
     $book = Book::factory()->create(['name' => '1 Corintios', 'slug' => '1-corintios']);
     makeVerse($book, 13, 4, 'El amor es sufrido, es benigno.');
