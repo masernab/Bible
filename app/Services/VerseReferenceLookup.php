@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Book;
 use App\Models\Verse;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection as SupportCollection;
 use Illuminate\Support\Str;
 
 class VerseReferenceLookup
@@ -21,6 +22,7 @@ class VerseReferenceLookup
      *     verse: int|null,
      *     label: string|null,
      *     verses: Collection<int, Verse>,
+     *     chapters: SupportCollection<int, Collection<int, Verse>>,
      *     error: string|null,
      * }
      */
@@ -127,6 +129,7 @@ class VerseReferenceLookup
      *     verse: int|null,
      *     label: string|null,
      *     verses: Collection<int, Verse>,
+     *     chapters: SupportCollection<int, Collection<int, Verse>>,
      *     error: string|null,
      * }
      */
@@ -138,12 +141,15 @@ class VerseReferenceLookup
         ?Collection $verses = null,
         ?string $error = null,
     ): array {
+        $verses ??= new Collection;
+
         return [
             'book' => $book,
             'chapter' => $chapter,
             'verse' => $verse,
             'label' => $label,
-            'verses' => $verses ?? new Collection,
+            'verses' => $verses,
+            'chapters' => $verses->groupBy('chapter'),
             'error' => $error,
         ];
     }

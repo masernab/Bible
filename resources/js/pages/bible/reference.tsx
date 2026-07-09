@@ -14,16 +14,26 @@ interface Verse {
     text: string;
 }
 
+interface Chapter {
+    chapter: number;
+    verses: Verse[];
+}
+
 interface Props {
     query: string;
     label: string | null;
     error: string | null;
-    verses: Verse[];
+    chapters: Chapter[];
 }
 
 const EXAMPLES = ['Josué 1:8', 'Juan 3 16', 'Salmos 23', '1 Corintios 13:4'];
 
-export default function BibleReference({ query, label, error, verses }: Props) {
+export default function BibleReference({
+    query,
+    label,
+    error,
+    chapters,
+}: Props) {
     return (
         <>
             <Head title="Look up by reference" />
@@ -87,37 +97,48 @@ export default function BibleReference({ query, label, error, verses }: Props) {
                     query={query}
                     label={label}
                     error={error}
-                    verses={verses}
+                    chapters={chapters}
                 />
             </div>
         </>
     );
 }
 
-function Passage({ label, error, verses }: Props) {
+function Passage({ label, error, chapters }: Props) {
     if (error) {
         return <p className="text-sm text-muted-foreground">{error}</p>;
     }
 
-    if (verses.length === 0) {
+    if (chapters.length === 0) {
         return null;
     }
 
+    const showChapterHeadings = chapters.length > 1;
+
     return (
         <Card>
-            <CardContent className="space-y-3 py-1">
+            <CardContent className="space-y-6 py-4">
                 {label && (
                     <p className="text-sm font-medium text-muted-foreground">
                         {label}
                     </p>
                 )}
-                {verses.map((verse) => (
-                    <p key={verse.id} className="leading-relaxed">
-                        <sup className="mr-1 text-xs font-medium text-muted-foreground">
-                            {verse.verse}
-                        </sup>
-                        {verse.text}
-                    </p>
+                {chapters.map((group) => (
+                    <div key={group.chapter} className="space-y-3">
+                        {showChapterHeadings && (
+                            <h2 className="text-sm font-semibold tracking-tight">
+                                Chapter {group.chapter}
+                            </h2>
+                        )}
+                        {group.verses.map((verse) => (
+                            <p key={verse.id} className="leading-relaxed">
+                                <sup className="mr-1 text-xs font-medium text-muted-foreground">
+                                    {verse.verse}
+                                </sup>
+                                {verse.text}
+                            </p>
+                        ))}
+                    </div>
                 ))}
             </CardContent>
         </Card>

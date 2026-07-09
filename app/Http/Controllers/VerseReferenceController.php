@@ -27,12 +27,17 @@ class VerseReferenceController extends Controller
             'query' => $query,
             'label' => $result['label'] ?? null,
             'error' => $result['error'] ?? null,
-            'verses' => collect($result['verses'] ?? [])->map(fn ($verse) => [
-                'id' => $verse->id,
-                'reference' => $verse->reference,
-                'verse' => $verse->verse,
-                'text' => $verse->text,
-            ])->values(),
+            'chapters' => collect($result['chapters'] ?? [])
+                ->map(fn ($verses, $chapter) => [
+                    'chapter' => (int) $chapter,
+                    'verses' => $verses->map(fn ($verse) => [
+                        'id' => $verse->id,
+                        'reference' => $verse->reference,
+                        'verse' => $verse->verse,
+                        'text' => $verse->text,
+                    ])->values(),
+                ])
+                ->values(),
         ]);
     }
 }

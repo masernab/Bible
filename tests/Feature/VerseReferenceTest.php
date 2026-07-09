@@ -24,9 +24,11 @@ it('finds a single verse from "book chapter verse"', function () {
             ->component('bible/reference')
             ->where('label', 'Josué 1:8')
             ->where('error', null)
-            ->has('verses', 1)
-            ->where('verses.0.verse', 8)
-            ->where('verses.0.reference', 'Josué 1:8')
+            ->has('chapters', 1)
+            ->where('chapters.0.chapter', 1)
+            ->has('chapters.0.verses', 1)
+            ->where('chapters.0.verses.0.verse', 8)
+            ->where('chapters.0.verses.0.reference', 'Josué 1:8')
         );
 });
 
@@ -38,7 +40,7 @@ it('accepts the colon format and ignores accents', function () {
         ->assertOk()
         ->assertInertia(fn ($page) => $page
             ->where('label', 'Josué 1:8')
-            ->has('verses', 1)
+            ->has('chapters.0.verses', 1)
         );
 });
 
@@ -52,7 +54,9 @@ it('returns the whole chapter when no verse is given', function () {
         ->assertOk()
         ->assertInertia(fn ($page) => $page
             ->where('label', 'Juan 3')
-            ->has('verses', 2)
+            ->has('chapters', 1)
+            ->where('chapters.0.chapter', 3)
+            ->has('chapters.0.verses', 2)
         );
 });
 
@@ -67,8 +71,12 @@ it('returns the whole book when only a book name is given', function () {
         ->assertInertia(fn ($page) => $page
             ->where('label', 'Juan')
             ->where('error', null)
-            ->has('verses', 3)
-            ->where('verses.0.reference', 'Juan 1:1')
+            ->has('chapters', 2)
+            ->where('chapters.0.chapter', 1)
+            ->has('chapters.0.verses', 1)
+            ->where('chapters.0.verses.0.reference', 'Juan 1:1')
+            ->where('chapters.1.chapter', 3)
+            ->has('chapters.1.verses', 2)
         );
 });
 
@@ -80,8 +88,8 @@ it('handles books whose name starts with a number', function () {
         ->assertOk()
         ->assertInertia(fn ($page) => $page
             ->where('label', '1 Corintios 13:4')
-            ->has('verses', 1)
-            ->where('verses.0.verse', 4)
+            ->has('chapters.0.verses', 1)
+            ->where('chapters.0.verses.0.verse', 4)
         );
 });
 
@@ -90,7 +98,7 @@ it('reports an unknown book', function () {
         ->assertOk()
         ->assertInertia(fn ($page) => $page
             ->has('error')
-            ->has('verses', 0)
+            ->has('chapters', 0)
         );
 });
 
@@ -99,7 +107,7 @@ it('reports an unparseable reference', function () {
         ->assertOk()
         ->assertInertia(fn ($page) => $page
             ->has('error')
-            ->has('verses', 0)
+            ->has('chapters', 0)
         );
 });
 
@@ -110,7 +118,7 @@ it('shows nothing for an empty query', function () {
             ->component('bible/reference')
             ->where('query', '')
             ->where('error', null)
-            ->has('verses', 0)
+            ->has('chapters', 0)
         );
 });
 
