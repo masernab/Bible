@@ -99,17 +99,27 @@ function Results({ query, results }: Props) {
     return (
         <div className="mt-8 space-y-4">
             {results.map((result) => (
-                <Card key={result.id}>
-                    <CardContent className="py-1">
-                        <div className="mb-1.5 flex items-center gap-2">
-                            <span className="text-sm font-medium text-muted-foreground">
-                                {result.reference}
-                            </span>
-                            <Badge variant="secondary">{result.book}</Badge>
-                        </div>
-                        <p className="leading-relaxed">{result.text}</p>
-                    </CardContent>
-                </Card>
+                <Link
+                    key={result.id}
+                    href={bibleReference.url({
+                        query: { q: result.reference },
+                    })}
+                    className="block rounded-xl transition-colors hover:bg-muted/50 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                >
+                    <Card>
+                        <CardContent className="py-1">
+                            <div className="mb-1.5 flex items-center gap-2">
+                                <span className="text-sm font-medium text-muted-foreground">
+                                    {result.reference}
+                                </span>
+                                <Badge variant="secondary">
+                                    {result.book}
+                                </Badge>
+                            </div>
+                            <p className="leading-relaxed">{result.text}</p>
+                        </CardContent>
+                    </Card>
+                </Link>
             ))}
         </div>
     );
