@@ -112,9 +112,7 @@ function Results({ query, results }: Props) {
                                 <span className="text-sm font-medium text-muted-foreground">
                                     {result.reference}
                                 </span>
-                                <Badge variant="secondary">
-                                    {result.book}
-                                </Badge>
+                                <Badge variant="secondary">{result.book}</Badge>
                             </div>
                             <p className="leading-relaxed">{result.text}</p>
                         </CardContent>
