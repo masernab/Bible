@@ -1,7 +1,7 @@
 import { Form, Head, Link, usePage } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { dashboard, login, register } from '@/routes';
+import { dashboard } from '@/routes';
 import { search as bibleSearch } from '@/routes/bible';
 
 // The scripture text is Spanish (Reina-Valera), so the example queries are
@@ -23,28 +23,13 @@ export default function Welcome() {
 
             <div className="flex min-h-screen flex-col bg-background text-foreground">
                 <header className="mx-auto flex w-full max-w-2xl items-center justify-end gap-4 px-6 py-6 text-sm">
-                    {auth.user ? (
+                    {auth.user && (
                         <Link
                             href={dashboard()}
                             className="rounded-md border px-4 py-1.5 transition-colors hover:bg-muted"
                         >
                             Dashboard
                         </Link>
-                    ) : (
-                        <>
-                            <Link
-                                href={login()}
-                                className="text-muted-foreground transition-colors hover:text-foreground"
-                            >
-                                Log in
-                            </Link>
-                            <Link
-                                href={register()}
-                                className="rounded-md border px-4 py-1.5 transition-colors hover:bg-muted"
-                            >
-                                Register
-                            </Link>
-                        </>
                     )}
                 </header>
 

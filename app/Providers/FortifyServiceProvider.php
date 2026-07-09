@@ -11,7 +11,6 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
-use Laravel\Fortify\Features;
 use Laravel\Fortify\Fortify;
 
 class FortifyServiceProvider extends ServiceProvider
@@ -48,10 +47,7 @@ class FortifyServiceProvider extends ServiceProvider
      */
     private function configureViews(): void
     {
-        Fortify::loginView(fn (Request $request) => Inertia::render('auth/login', [
-            'canResetPassword' => Features::enabled(Features::resetPasswords()),
-            'status' => $request->session()->get('status'),
-        ]));
+        Fortify::loginView(fn () => abort(404));
 
         Fortify::resetPasswordView(fn (Request $request) => Inertia::render('auth/reset-password', [
             'email' => $request->email,
@@ -65,10 +61,6 @@ class FortifyServiceProvider extends ServiceProvider
 
         Fortify::verifyEmailView(fn (Request $request) => Inertia::render('auth/verify-email', [
             'status' => $request->session()->get('status'),
-        ]));
-
-        Fortify::registerView(fn () => Inertia::render('auth/register', [
-            'passwordRules' => Password::defaults()->toPasswordRulesString(),
         ]));
 
         Fortify::twoFactorChallengeView(fn () => Inertia::render('auth/two-factor-challenge'));

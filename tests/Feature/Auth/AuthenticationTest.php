@@ -4,10 +4,8 @@ use App\Models\User;
 use Illuminate\Support\Facades\RateLimiter;
 use Laravel\Fortify\Features;
 
-test('login screen can be rendered', function () {
-    $response = $this->get(route('login'));
-
-    $response->assertOk();
+test('login screen is not available', function () {
+    $this->get(route('login'))->assertNotFound();
 });
 
 test('users can authenticate using the login screen', function () {
