@@ -117,6 +117,11 @@ return [
             'driver' => 'ollama',
             'key' => env('OLLAMA_API_KEY', ''),
             'url' => env('OLLAMA_URL', 'http://localhost:11434'),
+            'models' => [
+                // Mirror config/bible.php so search (this provider default) and
+                // generation (EmbedBible) always use the same embeddings model.
+                'embeddings' => ['default' => env('BIBLE_EMBEDDING_MODEL', 'nomic-embed-text')],
+            ],
         ],
 
         'openai' => [
