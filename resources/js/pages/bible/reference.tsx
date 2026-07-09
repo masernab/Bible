@@ -1,6 +1,19 @@
 import { Form, Head, Link } from '@inertiajs/react';
+import { ChevronDown } from 'lucide-react';
+import {
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbList,
+    BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import {
     reference as bibleReference,
@@ -24,6 +37,10 @@ interface Props {
     label: string | null;
     error: string | null;
     chapters: Chapter[];
+    books: string[];
+    currentBook: string | null;
+    currentChapter: number | null;
+    chapterCount: number | null;
 }
 
 const EXAMPLES = ['Josué 1:8', 'Juan 3 16', 'Salmos 23', '1 Corintios 13:4'];
@@ -33,6 +50,10 @@ export default function BibleReference({
     label,
     error,
     chapters,
+    books,
+    currentBook,
+    currentChapter,
+    chapterCount,
 }: Props) {
     return (
         <>
@@ -93,6 +114,13 @@ export default function BibleReference({
                     ))}
                 </div>
 
+                <PassageBreadcrumb
+                    books={books}
+                    currentBook={currentBook}
+                    currentChapter={currentChapter}
+                    chapterCount={chapterCount}
+                />
+
                 <Passage
                     query={query}
                     label={label}
@@ -104,7 +132,99 @@ export default function BibleReference({
     );
 }
 
-function Passage({ label, error, chapters }: Props) {
+function PassageBreadcrumb({
+    books,
+    currentBook,
+    currentChapter,
+    chapterCount,
+}: Pick<Props, 'books' | 'currentBook' | 'currentChapter' | 'chapterCount'>) {
+    if (!currentBook) {
+        return null;
+    }
+
+    const chapterNumbers = Array.from(
+        { length: chapterCount ?? 0 },
+        (_, index) => index + 1,
+    );
+
+    const triggerClasses =
+        'inline-flex items-center gap-1 rounded-md px-2 py-1 transition-colors hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none';
+
+    return (
+        <Breadcrumb className="mb-4">
+            <BreadcrumbList>
+                <BreadcrumbItem>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger className={triggerClasses}>
+                            {currentBook}
+                            <ChevronDown className="size-3.5" />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent
+                            align="start"
+                            className="max-h-72 overflow-y-auto"
+                        >
+                            {books.map((book) => (
+                                <DropdownMenuItem key={book} asChild>
+                                    <Link
+                                        href={bibleReference.url({
+                                            query: { q: `${book} 1` },
+                                        })}
+                                    >
+                                        {book}
+                                    </Link>
+                                </DropdownMenuItem>
+                            ))}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </BreadcrumbItem>
+
+                {chapterNumbers.length > 0 && (
+                    <>
+                        <BreadcrumbSeparator />
+                        <BreadcrumbItem>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger className={triggerClasses}>
+                                    {currentChapter
+                                        ? `Chapter ${currentChapter}`
+                                        : 'Chapter'}
+                                    <ChevronDown className="size-3.5" />
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent
+                                    align="start"
+                                    className="grid max-h-72 grid-cols-5 gap-1 overflow-y-auto"
+                                >
+                                    {chapterNumbers.map((number) => (
+                                        <DropdownMenuItem
+                                            key={number}
+                                            asChild
+                                            className="justify-center"
+                                        >
+                                            <Link
+                                                href={bibleReference.url({
+                                                    query: {
+                                                        q: `${currentBook} ${number}`,
+                                                    },
+                                                })}
+                                            >
+                                                {number}
+                                            </Link>
+                                        </DropdownMenuItem>
+                                    ))}
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </BreadcrumbItem>
+                    </>
+                )}
+            </BreadcrumbList>
+        </Breadcrumb>
+    );
+}
+
+function Passage({
+    label,
+    error,
+    chapters,
+}: Pick<Props, 'query' | 'label' | 'error' | 'chapters'>) {
     if (error) {
         return <p className="text-sm text-muted-foreground">{error}</p>;
     }

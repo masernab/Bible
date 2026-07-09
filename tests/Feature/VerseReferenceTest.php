@@ -57,6 +57,10 @@ it('returns the whole chapter when no verse is given', function () {
             ->has('chapters', 1)
             ->where('chapters.0.chapter', 3)
             ->has('chapters.0.verses', 2)
+            ->where('currentBook', 'Juan')
+            ->where('currentChapter', 3)
+            ->where('chapterCount', 4)
+            ->has('books')
         );
 });
 
@@ -119,6 +123,16 @@ it('shows nothing for an empty query', function () {
             ->where('query', '')
             ->where('error', null)
             ->has('chapters', 0)
+        );
+});
+
+it('exposes no current book on the empty page', function () {
+    $this->get('/passage')
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->where('currentBook', null)
+            ->where('currentChapter', null)
+            ->where('chapterCount', null)
         );
 });
 

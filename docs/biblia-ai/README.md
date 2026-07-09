@@ -58,6 +58,7 @@ Reina-Valera JSON ──▶ `verses` table ──▶ embeddings (Ollama) ──�
 | 11 | [Final verification](11-final-verification.md) | End-to-end test of the whole flow |
 | 12 | [Look up by reference](12-reference-lookup.md) *(bonus)* | A `/passage` page to read a verse by citation (`Josué 1:8`) |
 | 13 | [Clickable results](13-clickable-results.md) *(bonus)* | Clicking a search result on `/bible` opens it in `/passage` |
+| 14 | [Passage breadcrumb](14-passage-breadcrumb.md) *(bonus)* | A breadcrumb on `/passage` to jump to any book or chapter |
 
 ---
 

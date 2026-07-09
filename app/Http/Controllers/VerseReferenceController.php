@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Book;
+use App\Models\Verse;
 use App\Services\VerseReferenceLookup;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -23,6 +25,8 @@ class VerseReferenceController extends Controller
             ? null
             : $this->lookup->lookup($query);
 
+        $book = $result['book'] ?? null;
+
         return Inertia::render('bible/reference', [
             'query' => $query,
             'label' => $result['label'] ?? null,
@@ -38,6 +42,12 @@ class VerseReferenceController extends Controller
                     ])->values(),
                 ])
                 ->values(),
+            'books' => Book::query()->orderBy('position')->pluck('name'),
+            'currentBook' => $book?->name,
+            'currentChapter' => $result['chapter'] ?? null,
+            'chapterCount' => $book
+                ? (int) Verse::query()->where('book_id', $book->id)->max('chapter')
+                : null,
         ]);
     }
 }
